@@ -1,0 +1,38 @@
+{
+    "version": "2.0",
+    "routeKey": "$default",
+    "rawPath": "/1440x1440/000afb13-9cd1-43d2-9bcd-332c0fa3f5b3.jpeg",
+    "rawQueryString": "",
+    "headers": {
+        "x-amzn-tls-cipher-suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "x-amzn-tls-version": "TLSv1.2",
+        "x-amzn-trace-id": "Root=1-642980fb-5cb04cbd26128fc11518278d",
+        "x-forwarded-proto": "https",
+        "host": "abcd123.lambda-url.eu-west-3.on.aws",
+        "x-forwarded-port": "443",
+        "x-forwarded-for": "4.3.2.1",
+        "accept-encoding": "br,gzip",
+        "x-amz-cf-id": "7lxYDkwYCDVWOkEtemSAiEJWahhvB1JwQCqgGoVXDfP4oMN7lvemMA==",
+        "user-agent": "Amazon CloudFront",
+        "via": "3.0 70ee39257364131aeb08a57b30a5dfb4.cloudfront.net (CloudFront)"
+    },
+    "requestContext": {
+        "accountId": "anonymous",
+        "apiId": "abcd123",
+        "domainName": "abcd123.lambda-url.eu-west-3.on.aws",
+        "domainPrefix": "abcd123",
+        "http": {
+            "method": "GET",
+            "path": "/1440x1440/000afb13-9cd1-43d2-9bcd-332c0fa3f5b3.jpeg",
+            "protocol": "HTTP/1.1",
+            "sourceIp": "1.2.3.4",
+            "userAgent": "Amazon CloudFront"
+        },
+        "requestId": "e437198c-8be0-4d4b-b437-94c8e4e0b0dc",
+        "routeKey": "$default",
+        "stage": "$default",
+        "time": "02/Apr/2023:13:19:55 +0000",
+        "timeEpoch": 1680441595513
+    },
+    "isBase64Encoded": false
+}
