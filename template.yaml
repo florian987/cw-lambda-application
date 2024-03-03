@@ -10,7 +10,7 @@ Description: >-
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
 Transform:
-- AWS::Serverless-2016-10-31
+  - AWS::Serverless-2016-10-31
 
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
@@ -41,7 +41,6 @@ Resources:
       AutoPublishAlias: live
       FunctionUrlConfig:
         AuthType: NONE
-
   ContactFormFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -56,6 +55,32 @@ Resources:
         Variables:
           REGION: "{{resolve:ssm:/contact-form/aws-region}}"
           SNS_TOPIC: "{{resolve:ssm:/contact-form/sns-topic}}"
+          RECAPTCHA_SECRET: "{{resolve:ssm:/contact-form/recaptcha-secret}}"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - SNSPublishMessagePolicy:
+            TopicName: "{{resolve:ssm:/contact-form/sns-topic-name}}"
+      AutoPublishAlias: live
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - "*"
+  ContactFormBRFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/contact-form-br.contactFormHandler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 256
+      Timeout: 5
+      Description: A Lambda function for contact form.
+      Environment:
+        Variables:
+          REGION: "{{resolve:ssm:/contact-form/aws-region}}"
+          SNS_TOPIC: "{{resolve:ssm:/contact-form/sns-topic}}"
+          RECAPTCHA_SECRET: "{{resolve:ssm:/contact-form-br/recaptcha-secret}}"
       Policies:
         - AWSLambdaBasicExecutionRole
         - SNSPublishMessagePolicy:
@@ -72,5 +97,8 @@ Outputs:
     Description: Image Resizer Function URL Endpoint.
     Value: !GetAtt ImageResizerFunctionUrl.FunctionUrl
   ContactFormFunctionEndpoint:
-    Description: Image Resizer Function URL Endpoint.
+    Description: Contact Form Function URL Endpoint.
     Value: !GetAtt ContactFormFunctionUrl.FunctionUrl
+  ContactFormBRFunctionEndpoint:
+    Description: Contact Form BR Function URL Endpoint.
+    Value: !GetAtt ContactFormBRFunctionUrl.FunctionUrl

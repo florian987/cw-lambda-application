@@ -1,12 +1,12 @@
 'use strict'
 
-import queryString from "query-string";
-import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
+import queryString from 'query-string';
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 import axios from 'axios';
 
 export const contactFormHandler = async (event) => {
 
-    const { userEmail, userMessage, userName, token } = queryString.parse(Buffer.from(event.body, 'base64').toString('ascii'));
+    const { fname, message, email, token } = queryString.parse(Buffer.from(event.body, 'base64').toString('ascii'));
 
     const valid = await isRecaptchaValid(token);
 
@@ -17,14 +17,14 @@ export const contactFormHandler = async (event) => {
 
         await snsClient.send(new PublishCommand({
             TopicArn: process.env.SNS_TOPIC,
-            Message: "Airtime Prod Contact Form\n" + userName + "\n" + userMessage + "\n" + userEmail,
+            Message: "BR Contact Form\n" + fname + "\n" + message + "\n" + email,
         }));
 
         return {
             statusCode: 200,
             body: {
-                type: 'success',
-                text: 'Message sent successfully!',
+                response: true,
+                message: 'Message sent successfully!',
             }
         };
     }
@@ -32,8 +32,8 @@ export const contactFormHandler = async (event) => {
     return {
         statusCode: 200,
         body: {
-            type: 'error',
-            text: 'Error while sending message',
+            response: false,
+            message: 'Message not sent',
         }
     };
 }
@@ -64,3 +64,4 @@ const isRecaptchaValid = async (token) => {
             return false;
         });
 }
+

@@ -37,7 +37,7 @@ export const imageResizerHandler = async (event) => {
             fit = { fit: sharp.fit.inside, withoutEnlargement: true }
         }
 
-        const pipeline = sharp()
+        const pipeline = sharp({ failOn: 'truncated' })
             //.composite([{ input: 'overlay.png', gravity: 'southeast' }])
             .resize(width, height, fit)
             .rotate()
