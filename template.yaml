@@ -18,8 +18,9 @@ Resources:
   ImageResizerFunction:
     Type: AWS::Serverless::Function
     Properties:
+      #CodeUri: src/
       Handler: src/handlers/image-resizer.imageResizerHandler
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1024

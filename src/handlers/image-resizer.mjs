@@ -1,13 +1,10 @@
 'use strict'
 
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-
-import { createCommonJS } from 'mlly'
-const { __dirname, __filename, require } = createCommonJS(import.meta.url)
 import sharp from 'sharp'
+import path from 'path';
 
 const s3 = new S3Client({ region: process.env.REGION });
-const path = require('path');
 
 export const imageResizerHandler = async (event) => {
 
@@ -37,21 +34,26 @@ export const imageResizerHandler = async (event) => {
             fit = { fit: sharp.fit.inside, withoutEnlargement: true }
         }
 
-        const pipeline = sharp({ failOn: 'truncated' })
-            //.composite([{ input: 'overlay.png', gravity: 'southeast' }])
-            .resize(width, height, fit)
+        let sharpPipeline = sharp({failOn: 'truncated'})
             .rotate()
+            .resize(width, height, fit)
             .jpeg({ mozjpeg: true });
 
-        response.Body.pipe(pipeline);
+        // watermark only large images and if user asked for it
+        if (width == 1440 && response.Metadata.watermark == 'true') {
+            sharpPipeline = sharpPipeline.composite([{input: './src/static/watermark.png', gravity: 'southeast'}])
+        }
 
-        const resizedImage = await pipeline.toBuffer();
+        const resizedImage = response.Body.pipe(sharpPipeline)
+
+        console.info(requestSize + '/' + parsedRequest.base)
 
         await s3.send(new PutObjectCommand({
-            Body: resizedImage,
+            Body: await resizedImage.toBuffer(),
             Bucket: process.env.DESTINATION_BUCKET,
-            Key: requestSize + '/' + parsedRequest.base
-        }));
+            Key: requestSize + '/' + parsedRequest.base,
+            ContentType: 'image/jpeg',
+        }))
 
         return {
             statusCode: 200,
