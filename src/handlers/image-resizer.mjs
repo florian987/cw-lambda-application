@@ -40,16 +40,16 @@ export const imageResizerHandler = async (event) => {
             .jpeg({ mozjpeg: true });
 
         // watermark only large images and if user asked for it
-        if (width == 1440 && response.Metadata.watermark == 'true') {
+        if (width == 1440 && response.Metadata.watermark == '1') {
             sharpPipeline = sharpPipeline.composite([{input: './src/static/watermark.png', gravity: 'southeast'}])
         }
 
-        const resizedImage = response.Body.pipe(sharpPipeline)
+        const resizedImage = await response.Body.pipe(sharpPipeline).toBuffer();
 
         console.info(requestSize + '/' + parsedRequest.base)
 
         await s3.send(new PutObjectCommand({
-            Body: await resizedImage.toBuffer(),
+            Body: resizedImage,
             Bucket: process.env.DESTINATION_BUCKET,
             Key: requestSize + '/' + parsedRequest.base,
             ContentType: 'image/jpeg',

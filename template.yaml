@@ -18,7 +18,6 @@ Resources:
   ImageResizerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      #CodeUri: src/
       Handler: src/handlers/image-resizer.imageResizerHandler
       Runtime: nodejs20.x
       Architectures:
@@ -39,6 +38,29 @@ Resources:
             BucketName: "{{resolve:ssm:/captain-resize/original-bucket}}"
         - S3WritePolicy:
             BucketName: "{{resolve:ssm:/captain-resize/destination-bucket}}"
+      AutoPublishAlias: live
+      FunctionUrlConfig:
+        AuthType: NONE
+  BannerMakerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/banner-maker.handler
+      Runtime: nodejs20.x
+      Architectures:
+        - x86_64
+      MemorySize: 1024
+      Timeout: 10
+      Description: A Lambda function that generate banner.
+      Environment:
+        Variables:
+          REGION: "{{resolve:ssm:/captain-banner/aws-region}}"
+          DESTINATION_BUCKET: "{{resolve:ssm:/captain-banner/destination-bucket}}"
+          BANNER_DATA_URI: "{{resolve:ssm:/captain-banner/banner-data-uri}}"
+          FONTCONFIG_PATH: "/var/task/fonts"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3WritePolicy:
+            BucketName: "{{resolve:ssm:/captain-banner/destination-bucket}}"
       AutoPublishAlias: live
       FunctionUrlConfig:
         AuthType: NONE
@@ -97,6 +119,9 @@ Outputs:
   ImageResizerFunctionEndpoint:
     Description: Image Resizer Function URL Endpoint.
     Value: !GetAtt ImageResizerFunctionUrl.FunctionUrl
+  BannerMakerFunctionEndpoint:
+    Description: Banner Maker Function URL Endpoint.
+    Value: !GetAtt BannerMakerFunctionUrl.FunctionUrl
   ContactFormFunctionEndpoint:
     Description: Contact Form Function URL Endpoint.
     Value: !GetAtt ContactFormFunctionUrl.FunctionUrl
