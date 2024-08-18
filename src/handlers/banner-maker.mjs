@@ -35,9 +35,9 @@ export const handler = async (event) => {
                 ]]>
             </style>
             <text x="110" y="47" text-anchor="start">${data.count}</text>
-            <text x="240" y="17" text-anchor="start">${data.top[0]}</text>
-            <text x="240" y="35" text-anchor="start">${data.top[1]}</text>
-            <text x="240" y="54" text-anchor="start">${data.top[2]}</text>
+            ${data.top[0] ? `<text x="240" y="17" text-anchor="start">${data.top[0]}</text>` : ''}
+            ${data.top[1] ? `<text x="240" y="35" text-anchor="start">${data.top[1]}</text>` : ''}
+            ${data.top[2] ? `<text x="240" y="54" text-anchor="start">${data.top[2]}</text>` : ''}
         </svg>`;
 
         const processedImage = await sharp('./src/static/background-banner.png')
