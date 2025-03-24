@@ -7,7 +7,7 @@
         "@aws-sdk/client-s3": "^3.32.0",
         "axios": "^1.6.7",
         "query-string": "^8.1.0",
-        "sharp": "^0.32.0"
+        "sharp": "^0.32.6"
     },
     "devDependencies": {
         "jest": "^29.2.1"

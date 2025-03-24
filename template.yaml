@@ -15,6 +15,33 @@ Transform:
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
+  ProfilePictureResizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/profile-picture-resizer.profilePictureResizerHandler
+      Runtime: nodejs20.x
+      Architectures:
+        - arm64
+      MemorySize: 1024
+      Timeout: 10
+      Description: A Lambda function that resizes profile pictures to 96x96 WebP format.
+      Environment:
+        Variables:
+          REGION: "{{resolve:ssm:/profile-picture-resize/aws-region}}"
+          PREFIX: "{{resolve:ssm:/profile-picture-resize/prefix}}"
+          ORIGINAL_BUCKET: "{{resolve:ssm:/profile-picture-resize/original-bucket}}"
+          DESTINATION_BUCKET: "{{resolve:ssm:/profile-picture-resize/destination-bucket}}"
+          ALLOWED_EXTENSIONS: "{{resolve:ssm:/profile-picture-resize/allowed-extensions}}"
+          SIZE: "{{resolve:ssm:/profile-picture-resize/size}}"
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3ReadPolicy:
+            BucketName: "{{resolve:ssm:/profile-picture-resize/original-bucket}}"
+        - S3WritePolicy:
+            BucketName: "{{resolve:ssm:/profile-picture-resize/destination-bucket}}"
+      AutoPublishAlias: live
+      FunctionUrlConfig:
+        AuthType: NONE
   ImageResizerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -91,6 +118,9 @@ Resources:
             - "*"
 
 Outputs:
+  ProfilePictureResizerFunctionEndpoint:
+    Description: Profile Picture Resizer Function URL Endpoint.
+    Value: !GetAtt ProfilePictureResizerFunctionUrl.FunctionUrl
   ImageResizerFunctionEndpoint:
     Description: Image Resizer Function URL Endpoint.
     Value: !GetAtt ImageResizerFunctionUrl.FunctionUrl

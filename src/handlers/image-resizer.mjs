@@ -34,14 +34,14 @@ export const imageResizerHandler = async (event) => {
             fit = { fit: sharp.fit.inside, withoutEnlargement: true }
         }
 
-        let sharpPipeline = sharp({failOn: 'truncated'})
+        let sharpPipeline = sharp({ failOn: 'truncated' })
             .rotate()
             .resize(width, height, fit)
             .jpeg({ mozjpeg: true });
 
         // watermark only large images and if user asked for it
         if (width == 1440 && response.Metadata.watermark == '1') {
-            sharpPipeline = sharpPipeline.composite([{input: './src/static/watermark.png', gravity: 'southeast'}])
+            sharpPipeline = sharpPipeline.composite([{ input: './src/static/watermark.png', gravity: 'southeast' }])
         }
 
         const resizedImage = await response.Body.pipe(sharpPipeline).toBuffer();
